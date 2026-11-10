@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="referrer" content="no-referrer">
+
+    <title>Confirmación de correo | EcoGuía</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #AFBCE9;
+            font-family: Arial, sans-serif;
+            color: #19192D;
+            padding: 20px;
+        }
+
+        .contenedor {
+            background: #FAF9F7;
+            border-radius: 24px;
+            padding: 36px 25px;
+            width: 100%;
+            max-width: 390px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            width: 95px;
+            height: 95px;
+            background: #FFC21C;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0 auto 25px;
+            color: black;
+        }
+
+        .simbolo {
+            width: 65px;
+            height: 65px;
+            background: #DDF6E9;
+            color: #228A4B;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #555568;
+        }
+
+        .mensaje {
+            background: #E7E4F9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .pie {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #777783;
+        }
+
+        .error {
+            background: #FCE0E1;
+            color: #9A2633;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="contenedor">
+
+        <div class="logo">
+            EcoGuía
+        </div>
+
+        <div class="simbolo" id="simbolo">
+            ✓
+        </div>
+
+        <h1 id="titulo">
+            Confirmación de correo
+        </h1>
+
+        <p id="descripcion">
+            Estamos comprobando el resultado.
+        </p>
+
+        <div class="mensaje" id="mensaje">
+            Abre EcoGuía en tu teléfono
+            para iniciar sesión como encargado.
+        </div>
+
+        <div class="pie">
+            EcoGuía - Universidad de El Salvador
+        </div>
+
+    </main>
+
+    <script>
+        // Supabase puede devolver información
+        // de la sesión en el fragmento de la URL.
+        // No debemos mostrarla ni almacenarla.
+
+        const fragmento = new URLSearchParams(
+            window.location.hash.substring(1)
+        );
+
+        const consulta = new URLSearchParams(
+            window.location.search
+        );
+
+        const error = fragmento.get("error_code") ||
+                      consulta.get("error_code") ||
+                      fragmento.get("error") ||
+                      consulta.get("error");
+
+        const hayResultado = Boolean(
+            fragmento.get("access_token") ||
+            consulta.get("code")
+        );
+
+        // Eliminar tokens y parámetros de la barra
+        // de direcciones inmediatamente.
+        window.history.replaceState(
+            null,
+            "",
+            window.location.pathname
+        );
+
+        const titulo = document.getElementById("titulo");
+        const descripcion =
+            document.getElementById("descripcion");
+        const mensaje = document.getElementById("mensaje");
+        const simbolo = document.getElementById("simbolo");
+
+        if (error) {
+            titulo.textContent =
+                "No se pudo confirmar el correo";
+
+            descripcion.textContent =
+                "El enlace es inválido, expiró " +
+                "o ya fue utilizado.";
+
+            mensaje.textContent =
+                "Comprueba en Supabase si tu correo " +
+                "ya está confirmado. Si no lo está, " +
+                "solicita un nuevo enlace.";
+
+            mensaje.classList.add("error");
+            simbolo.textContent = "!";
+            simbolo.classList.add("error");
+
+        } else if (hayResultado) {
+            titulo.textContent =
+                "¡Correo confirmado!";
+
+            descripcion.textContent =
+                "Supabase completó la redirección " +
+                "de confirmación.";
+
+            mensaje.textContent =
+                "Ya puedes regresar a EcoGuía e " +
+                "iniciar sesión con tu nombre de " +
+                "usuario y contraseña.";
+
+        } else {
+            titulo.textContent =
+                "Bienvenido a EcoGuía";
+
+            descripcion.textContent =
+                "Esta es la página de retorno " +
+                "para la confirmación de correo.";
+
+            mensaje.textContent =
+                "Si ya confirmaste tu dirección, " +
+                "regresa a EcoGuía e inicia sesión.";
+        }
+    </script>
+
+</body>
+</html>
